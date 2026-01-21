@@ -208,29 +208,6 @@ Decision trees are supervised learning algorithms that create a model predicting
 
 ---
 
-## 🌐 Deployment
-
-### Deploy to Streamlit Cloud (Free)
-
-1. **Push to GitHub**
-```bash
-git init
-git add .
-git commit -m "Initial commit: Decision Trees Dashboard"
-git push origin main
-```
-
-2. **Deploy on Streamlit Cloud**
-- Go to [share.streamlit.io](https://share.streamlit.io)
-- Sign in with GitHub
-- Select your repository
-- Set main file path: `app.py`
-- Deploy!
-
-Your app will be live at: `https://[your-username]-decision-trees-dashboard.streamlit.app`
-
----
-
 ## 🛠️ Tech Stack
 
 - **Frontend**: Streamlit 1.39+

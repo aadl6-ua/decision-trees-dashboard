@@ -105,25 +105,30 @@ def preprocess_data(df: pd.DataFrame,
     else:
         for col in X.columns:
             if X[col].isnull().any():
-                if X[col].dtype in ['int64', 'float64']:
+                if pd.api.types.is_numeric_dtype(X[col]):
                     if handle_missing == 'mean':
                         X[col].fillna(X[col].mean(), inplace=True)
                     elif handle_missing == 'median':
                         X[col].fillna(X[col].median(), inplace=True)
                 else:
                     X[col].fillna(X[col].mode()[0] if not X[col].mode().empty else 'Unknown', inplace=True)
-    
+
     # Encode categorical variables
+    # Uses is_numeric_dtype (rather than checking for 'object'/'category' literally)
+    # so that any non-numeric dtype gets encoded - including pandas' "string" dtype,
+    # which pd.read_csv can return instead of plain "object" depending on the pandas
+    # version/backend, and which would otherwise slip through and break model.fit()
+    # with "could not convert string to float".
     if encode_categorical:
         for col in X.columns:
-            if X[col].dtype == 'object' or X[col].dtype.name == 'category':
+            if not pd.api.types.is_numeric_dtype(X[col]):
                 preprocessing_info['categorical_columns'].append(col)
                 le = LabelEncoder()
                 X[col] = le.fit_transform(X[col].astype(str))
                 preprocessing_info['label_encoders'][col] = le
-    
+
     # Encode target if categorical
-    if y.dtype == 'object' or y.dtype.name == 'category':
+    if not pd.api.types.is_numeric_dtype(y):
         le_target = LabelEncoder()
         y = pd.Series(le_target.fit_transform(y.astype(str)), index=y.index, name=target_column)
         preprocessing_info['target_encoder'] = le_target
